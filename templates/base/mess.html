@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Mess Schedule</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/view.css' %}">
+    <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            margin-right: 25px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f9fffd;
+            padding-top: 20px;
+            z-index: 1;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar header {
+            font-size: 18px;
+            color: rgb(13, 13, 13);
+            line-height: 70px;
+            background: #f9fffd;
+            user-select: none;
+        }
+
+        .sidebar ul a {
+            display: block;
+            height: 100%;
+            width: 100%;
+            line-height: 65px;
+            font-size: 14px;
+            color: rgb(12, 12, 12);
+            background: #f5fffa;
+            padding-left: 40px;
+            box-sizing: border-box;
+            border-bottom: 1px solid black;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            transition: 0.4s;
+        }
+
+        ul li:hover a {
+            padding-left: 50px;
+            background: #007bff;
+        }
+
+        .sidebar ul a i {
+            margin-right: 16px;
+            color: rgb(176, 24, 24);
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 15px;
+            left: 250px;
+            font-size: 30px;
+            color: #191a1b;
+            cursor: pointer;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            font-size: 20px;
+        }
+
+        .menu-btn.active {
+            left: 265px;
+        }
+
+        .container-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-left: 300px;
+            margin-top: 20px;
+            width: 70%;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .dropdown {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h2 {
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-btn">
+        <i class="fas fa-bars"></i> <!-- Menu icon -->
+        <span class="menu-text">Menu</span>
+    </div>
+
+    <!-- Sidebar -->
+    {% include 'base/sidebar.html' %}
+
+    <!-- Section for filter and data display -->
+    <section class="column-section">
+        <div class="container-box">
+            <h2>Mess Schedule</h2>
+            <form method="GET" action="{% url 'mess' %}">
+                <div class="dropdown">
+                    <label for="day_dropdown">Select Day:</label>
+                    <select id="day_dropdown" name="form-day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+
+                <div class="dropdown">
+                    <label for="year_input">Enter Year:</label>
+                    <input type="text" id="year" name="form-year" placeholder="2024-2025" required pattern="\d{4}-\d{4}">
+                    
+                </div>
+
+                <button type="submit">Show</button>
+            </form>
+
+            <h2>Mess Schedule for {{ day }} - {{ year }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Breakfast</th>
+                        <th>Lunch</th>
+                        <th>Snacks</th>
+                        <th>Dinner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if menus %}
+                        {% for menu in menus %}
+                        <tr>
+                            <td>{{ menu.breakfast }}</td>
+                            <td>{{ menu.lunch }}</td>
+                            <td>{{ menu.snacks }}</td>
+                            <td>{{ menu.dinner }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">No menu found for the selected filters.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        const menuBtn = document.querySelector('.menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+
+        // Initialize sidebar as visible
+        sidebar.classList.add('active'); // Show sidebar by default
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active'); // Toggle sidebar visibility
+            menuBtn.classList.toggle('active'); // Toggle menu button active state
+        });
+    </script>
+    </script>
+</body>
+</html>

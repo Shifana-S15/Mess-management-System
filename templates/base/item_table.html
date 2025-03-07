@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <title>Materials Table</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+</head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-right: 25px;
+    position: relative;
+    text-align: center;
+    bottom: -40px;
+  }
+  
+  /* Apply background effect */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+  }
+
+  /* Sidebar Styling */
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #f9fffd;
+    padding-top: 20px;
+    z-index: 1;
+    transition: left 0.3s ease;
+
+  }  /* Container for the table to ensure centering */
+  .sidebar.active {
+    left: 0;  /* Show sidebar when active */
+  }
+  .sidebar header {
+  font-size: 18px;
+  color: rgb(13, 13, 13);
+  line-height: 70px;
+  background: #f9fffd;
+  user-select: none;
+ }
+
+.sidebar ul a {
+  display: block;
+  height: 100%;
+  width: 100%;
+  line-height: 65px;
+  font-size: 14px;
+  color: rgb(12, 12, 12);
+  background: #f5fffa;
+  padding-left: 40px;
+  box-sizing: border-box;
+  border-bottom: 1px solid black;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  transition: 0.4s;
+ }
+
+ul li:hover a {
+  padding-left: 50px;
+  background:#007bff;
+ }
+
+.sidebar ul a i {
+  margin-right: 16px;
+  color:rgb(176, 24, 24);
+ }
+ .menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 30px;
+    color: #191a1b;
+    cursor: pointer;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    font-size: 20px;
+  }
+
+  .menu-btn.active {
+    left: 265px;  /* Place button after the sidebar when sidebar is active */
+  }
+
+  .data-table-container {
+    display: flex;
+    justify-content: center;   /* Horizontal centering */
+    align-items: center;       /* Vertical centering */
+    padding: 10px;
+    margin-top: 100px;
+    margin-left: 200px;
+    box-sizing: border-box; 
+    width: calc(100% - 250px);   /* Ensure padding doesn't affect the width */
+    position: relative;
+    
+  }
+
+
+
+
+/* Table styling remains the same */
+.data-table {
+    width: 80%;                /* Width of the table */
+    background-color: white;   /* Background for readability */
+    padding: 20px;
+    border-radius: 10px;       /* Optional: add rounded corners */
+      /* Optional: add subtle shadow */
+}
+
+table {
+    width: 50%;              /* Full width inside container */
+    border-collapse: collapse;
+    margin-left: 500px;
+    margin-bottom: -20px;
+}
+
+thead th {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+tbody td {
+    text-align: center;
+    padding: 8px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+  .button-container {
+  text-align: right; /* Align button to the right */
+  margin-bottom: 10px; /* Space below the button */
+}
+
+.btn-download {
+  background-color: #007bff; /* Blue color */
+  color: white; /* Text color */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Padding for button size */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size */
+}
+
+.btn-download:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.btn-download:focus {
+  outline: none; /* Remove focus outline */
+}
+.alert-red {
+        background-color: #ffff; /* Red background color */
+        color: red; /* White text color */
+        border-color: red;
+        text-align: center;
+        font-size: 25px; /* Optional: Darker border for better visibility */
+      }
+      .alert-red .close {
+        color: red; /* White close button color */
+      }
+
+
+
+</style>
+<body>
+
+  <div class="menu-btn">
+    <i class="fas fa-bars"></i> <!-- Menu icon -->
+    <span class="menu-text">Menu</span>
+  </div>
+  <!-- Sidebar (always visible) -->
+   {% include 'base/sidebar.html' %} 
+  
+  <!-- Main Content -->
+  {% if messages %}
+  <div class="alert alert-red alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+    
+  </div>
+{% endif %}
+
+
+
+<div class="container-box">
+    <h2>Grocery Management - Item Table</h2>
+
+    <!-- Display messages if any -->
+    {% if messages %}
+    <div id="messageBox" class="dialog-box">
+        {% for message in messages %}
+        <p class="{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Item Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" style="text-align: center;">No items found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var messageBox = document.getElementById('messageBox');
+        if (messageBox) {
+            setTimeout(function() {
+                messageBox.style.display = 'none';
+            }, 3000);  // Adjust the time as needed
+        }
+    });
+</script>
+</body>
+</html>

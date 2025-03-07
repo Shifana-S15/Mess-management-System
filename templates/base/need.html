@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Materials Needed</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+  <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      text-decoration: none;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-right: 25px;
+      position: relative;
+    }
+
+    /* Apply background effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      position: fixed;
+      left: -250px;
+      top: 0;
+      width: 250px;
+      height: 100%;
+      background-color: #f9fffd;
+      padding-top: 20px;
+      z-index: 1;
+      transition: left 0.3s ease;
+    }
+
+    .sidebar.active {
+      left: 0; /* Show sidebar when active */
+    }
+
+    .sidebar header {
+      font-size: 18px;
+      color: rgb(13, 13, 13);
+      line-height: 70px;
+      background: #f9fffd;
+      user-select: none;
+    }
+
+    .sidebar ul a {
+      display: block;
+      height: 100%;
+      width: 100%;
+      line-height: 65px;
+      font-size: 14px;
+      color: rgb(12, 12, 12);
+      background: #f5fffa;
+      padding-left: 40px;
+      box-sizing: border-box;
+      border-bottom: 1px solid black;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      transition: 0.4s;
+    }
+
+    ul li:hover a {
+      padding-left: 50px;
+      background: #007bff;
+    }
+
+    .menu-btn {
+      position: fixed;
+      top: 15px;
+      left: 250px;
+      font-size: 20px;
+      color: #191a1b;
+      cursor: pointer;
+      z-index: 1000;
+      transition: left 0.3s ease;
+    }
+
+    .menu-btn.active {
+      left: 265px; /* Place button after the sidebar when sidebar is active */
+    }
+
+    /* Centered Container */
+    .container-box {
+      background-color: rgba(0, 0, 0, 0);
+      padding: 40px;
+      margin: 50px auto; /* Center horizontally */
+      border-radius: 10px;
+      margin-left: 10px;
+      max-width: 1150px;
+      position: relative;
+      transition: transform 0.3s ease; /* Smooth transition for movement */
+      top: 50px;
+    }
+    
+    .sidebar.active ~ .container-box {
+      transform: translateX(250px); /* Adjust based on the sidebar width */
+    }
+  
+    .material-entry {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      position: relative; /* Positioning context for suggestions */
+    }
+  
+    .material-entry input {
+      padding: 5px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+  
+    .material-entry button {
+      height: 40px;
+      width: 140px;
+    }
+
+    #submit1 {
+      background-color: green;
+      color: white;
+      height: 40px;
+      width: 140px;
+    }
+
+    #addMaterial {
+      background-color: blue;
+      color: white;
+      text-align: center;
+      height: 40px;
+      width: 140px;
+    }
+
+    .remove-material {
+      background-color: red;
+      color: white;
+      height: 40px;
+      width: 140px;
+    }
+
+    @media (max-width: 768px) {
+      .container-box {
+        max-width: 90%;
+        padding: 20px;
+        transform: translateX(0); /* No shift on smaller screens */
+      }
+
+      .sidebar.active ~ .container-box {
+        transform: translateX(100px); /* Adjust for smaller sidebar on mobile */
+      }
+    }
+
+    .alert-red {
+      background-color: #ffff; /* Red background color */
+      color: red; /* White text color */
+      border-color: red;
+      text-align: center;
+      font-size: 25px; /* Optional: Darker border for better visibility */
+    }
+
+    .alert-red .close {
+      color: red; /* White close button color */
+    }
+
+    /* Suggestions container styles */
+    #suggestions {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      max-height: 150px;
+      margin-right: -100px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none; /* Initially hidden */
+    }
+
+    .suggestion-item {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+      background: #f0f0f0; /* Highlight on hover */
+    }
+    .mess-menu-entry {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Ensures proper alignment on smaller screens */
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .mess-menu-entry label {
+    font-weight: bold;
+  }
+
+  .mess-menu-entry input,
+  .mess-menu-entry select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    min-width: 150px;
+  }
+
+  .mess-menu-entry button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .mess-menu-entry button:hover {
+    background-color: #0056b3;
+  }
+
+  .menu-display {
+    margin-top: 20px;
+  }
+
+  .menu-display textarea {
+    width: 50%;
+    height:50px;
+    border:1px solic #ccc;
+    border-radius: 5px;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    resize: none; /* Prevent resizing */
+  }
+
+  @media (max-width: 768px) {
+    .mess-menu-entry {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mess-menu-entry input,
+    .mess-menu-entry select {
+      width: 100%; /* Full-width for mobile */
+    }
+  }
+  </style>
+</head>
+<body>
+  <div class="menu-btn">
+    <i class="fas fa-bars"></i> <!-- Menu icon -->
+    <span class="menu-text">Menu</span>
+  </div>
+  
+  {% include 'base/sidebar.html' %}
+
+  {% if messages %}
+  <div class="alert alert-red alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="container-box">
+    <h2>View Mess Menu for Selected Day and Session</h2>
+    <form id="messMenuForm">
+      <div class="mess-menu-entry">
+        <label for="menu-date">Select Date:</label>
+        <input type="date" id="menu-date" name="menu-date">
+  
+        <label for="menu-day">Day:</label>
+        <input type="text" id="menu-day" name="menu-day" readonly>
+  
+        <label for="menu-session">Session:</label>
+        <select id="menu-session" name="menu-session">
+          <option value="" disabled selected>Select Session</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="snacks">Snacks</option>
+          <option value="dinner">Dinner</option>
+        </select>
+  
+        <button type="button" id="fetchMenu">View Menu</button>
+      </div>
+  
+      <div class="menu-display">
+        <textarea id="menu-output" rows="8" readonly></textarea>
+      </div>
+    </form>
+  </div>
+  
+
+  <div class="container-box">
+    <h2>Mess Incharge - Request to Take Stock Items for Cooking and Get Approval </h2>
+    <form action="{% url 'materials_need_view' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div id="materialForm">
+        <div class="material-entry">
+          <input type="date" name="material-date" placeholder="Enter Date">
+          <input type="number"name="No_of_persons" placeholder="Enter Count">
+          <input type="text" name="material-name" id="material-name" placeholder="Search for material">
+          <div id="suggestions"></div> <!-- Suggestions container -->
+          <input type="number" name="material-quantity" placeholder="Enter Quantity" min="0" step="0.01">
+          
+        <input type="text" name="material-unit" id="material-unit" placeholder="Enter Unit" list="unit-options" oninput="checkInput(event)">
+        <datalist id="unit-options">
+          <option value="kg">
+          <option value="g">
+          <option value="l">
+          <option value="mL">
+          <option value="NOS">
+          <option value="PAC">
+          <option value="BTL">
+          <option value="MTR">
+        </datalist>
+          
+          <button type="button" class="add-material " id="addMaterial">Add Row</button>
+          <button type="button" class="remove-material">Remove</button>
+        </div>
+        <div class="material-container">    
+          <input type="submit" id="submit1" value="Submit"></div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+        // Initialize sidebar as visible
+        $('.sidebar').addClass('active'); // Show sidebar by default
+        $('.container-box').addClass('active'); // Adjust main container if needed
+
+        $('#addMaterial').click(function() {
+
+          $(document).ready(function () {
+    const firstDate = $('#materialForm .material-entry:first input[name="material-date"]').val();
+    const defaultDate = firstDate || new Date().toISOString().split('T')[0]; // Fallback to today's date
+
+    const newEntryTemplate = `
+        <div class="material-entry">
+            <input type="date" name="material-date" value="${defaultDate}" placeholder="Enter Date">
+            <input type="number" name="No_of_persons" placeholder="Enter count">
+            <input type="text" name="material-name" id="material-name" placeholder="Search for material">
+            <div id="suggestions"></div> <!-- Suggestions container -->
+            <input type="number" name="material-quantity" placeholder="Enter Quantity" min="0" step="0.01">
+            <input type="text" name="material-unit" id="material-unit" placeholder="Enter Unit" list="unit-options" oninput="checkInput(event)">
+            <datalist id="unit-options">
+              <option value="kg">
+              <option value="g">
+              <option value="l">
+              <option value="mL">
+              <option value="NOS">
+              <option value="PAC">
+              <option value="BTL">
+              <option value="MTR">
+            </datalist>
+           
+          
+            <button type="button" class="add-material" id="addMaterial">Add Row</button>
+            <button type="button" class="remove-material">Remove</button>
+        </div>`;
+    
+    // Add new entry row
+    $(document).on('click', '.add-material', function () {
+        // Get the value of No_of_persons from the first row
+        const firstPersonCount = $('.material-entry:first input[name="No_of_persons"]').val();
+
+        // Create a new entry and set the No_of_persons value
+        const newEntry = $(newEntryTemplate);
+        newEntry.find('input[name="No_of_persons"]').val(firstPersonCount);
+
+        // Append the new row to the form
+        $('#materialForm').append(newEntry);
+
+        // Re-append the save button to keep it at the bottom
+        const saveButton = $('#submit1').closest('div');
+        $('#materialForm').append(saveButton);
+    });
+});
+});
+
+        $(document).on('click', '.remove-material', function() {
+            $(this).closest('.material-entry').remove();
+        });
+
+        // AJAX for autocomplete
+        $('#materialForm').on('input', 'input[name="material-name"]', function() {
+            const query = $(this).val();
+            const $suggestions = $(this).siblings('#suggestions');
+
+            if (query.length < 1) {
+                $suggestions.hide(); // Hide suggestions if input is empty
+                return;
+            }
+
+            $.ajax({
+                url: '{% url "get_item_suggestions" %}', // Set the correct URL
+                data: {
+                    'term': query
+                },
+                success: function(data) {
+                    $suggestions.empty(); // Clear previous suggestions
+                    if (data.length > 0) {
+                        data.forEach(function(item) {
+                            $suggestions.append('<div class="suggestion-item">' + item + '</div>');
+                        });
+                        $suggestions.show(); // Show suggestions
+                    } else {
+                        $suggestions.hide(); // Hide if no suggestions
+                    }
+                }
+            });
+        });
+
+        // Handle suggestion click
+        $(document).on('click', '.suggestion-item', function() {
+            $(this).closest('.material-entry').find('input[name="material-name"]').val($(this).text()); // Set input value to selected suggestion
+            $(this).parent('#suggestions').hide(); // Hide suggestions
+        });
+
+        const menuBtn = document.querySelector('.menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const containerBox = document.querySelector('.container-box');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');  // Toggle sidebar visibility
+            containerBox.classList.toggle('active'); // Move container when sidebar is active
+            menuBtn.classList.toggle('active');  // Adjust menu button position
+        });
+    });
+</script>
+<script>
+  $(document).ready(function () {
+    // Calculate the next day based on the selected date
+    $('#menu-date').on('change', function () {
+      const selectedDate = new Date($(this).val());
+      if (!isNaN(selectedDate)) {
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const nextDay = daysOfWeek[selectedDate.getDay()];
+        $('#menu-day').val(nextDay); // Set the next day in the day field
+      } else {
+        $('#menu-day').val(''); // Clear if invalid date
+      }
+    });
+
+    // Fetch menu on button click
+    $('#fetchMenu').on('click', function () {
+      const date = $('#menu-date').val();
+      const day = $('#menu-day').val();
+      const session = $('#menu-session').val();
+
+      if (!date || !day || !session) {
+        alert('Please select all fields!');
+        return;
+      }
+
+      // AJAX request to fetch menu
+      $.ajax({
+        url: '{% url "get_mess_menu" %}', // Backend URL
+        method: 'GET',
+        data: { day, session },
+        success: function (response) {
+          if (response.menu) {
+            $('#menu-output').val(response.menu);
+          } else {
+            $('#menu-output').val('No menu found for the selected day and session.');
+          }
+        },
+        error: function () {
+          $('#menu-output').val('Error fetching the menu. Please try again.');
+        },
+      });
+    });
+  });
+  function checkInput(event) {
+    // Allow input to be selected only from the list options.
+    const inputValue = event.target.value;
+    const options = event.target.list.querySelectorAll('option');
+    let matchFound = false;
+
+    // Check if the entered value matches any option
+    options.forEach(option => {
+      if (option.value === inputValue) {
+        matchFound = true;
+      }
+    });
+
+    // If no match is found, clear the input
+    if (!matchFound) {
+      event.target.value = '';
+    }
+  }
+ 
+</script>
+
+</body>
+</html>

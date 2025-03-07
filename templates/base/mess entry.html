@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Enter Meal Menu</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+  <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      text-decoration: none;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-right: 25px;
+      position: relative;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      position: fixed;
+      left: -250px;
+      top: 0;
+      width: 250px;
+      height: 100%;
+      background-color: #f9fffd;
+      padding-top: 20px;
+      z-index: 1;
+      transition: left 0.3s ease;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar header {
+      font-size: 18px;
+      color: rgb(13, 13, 13);
+      line-height: 70px;
+      background: #f9fffd;
+      user-select: none;
+    }
+
+    .sidebar ul a {
+      display: block;
+      height: 100%;
+      width: 100%;
+      line-height: 65px;
+      font-size: 14px;
+      color: rgb(12, 12, 12);
+      background: #f5fffa;
+      padding-left: 40px;
+      box-sizing: border-box;
+      border-bottom: 1px solid black;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      transition: 0.4s;
+    }
+
+    ul li:hover a {
+      padding-left: 50px;
+      background: #007bff;
+    }
+
+    .menu-btn {
+      position: fixed;
+      top: 15px;
+      left: 250px;
+      font-size: 20px;
+      color: #191a1b;
+      cursor: pointer;
+      z-index: 1000;
+      transition: left 0.3s ease;
+    }
+
+    .menu-btn.active {
+      left: 265px;
+    }
+
+    .container-box {
+      background-color: rgba(0, 0, 0, 0);
+      padding: 40px;
+      margin: 50px auto;
+      border-radius: 10px;
+      max-width: 1150px;
+      margin-left: 10px;
+      position: relative;
+      transition: transform 0.3s ease;
+      top: 50px;
+    }
+
+    .sidebar.active ~ .container-box {
+      transform: translateX(250px);
+    }
+
+    @media (max-width: 768px) {
+      .container-box {
+        max-width: 90%;
+        padding: 20px;
+        transform: translateX(0);
+      }
+
+      .sidebar.active ~ .container-box {
+        transform: translateX(100px);
+      }
+    }
+
+    /* Form styling */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    #submitMenu {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      padding: 15px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #submitMenu:hover {
+      background-color: #218838;
+    }
+
+    #messageBox {
+      margin-top: 20px;
+      display: none;
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border: 1px solid #f5c6cb;
+      border-radius: 5px;
+    }
+
+    .alert-red {
+      background-color: #ffff;
+      color: red;
+      border-color: red;
+      text-align: center;
+      font-size: 25px;
+    }
+
+    .alert-red .close {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="menu-btn">
+    <i class="fas fa-bars"></i>
+    <span class="menu-text">Menu</span>
+  </div>
+
+  {% include 'base/sidebar.html' %}
+
+  <div class="container-box">
+    <h2>Enter Mess Menu</h2>
+
+    <!-- Alert Box -->
+    {% if messages %}
+    <div class="alert alert-red alert-dismissible fade show" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form action="{% url 'mess_entry_view' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+    <!-- Form Section -->
+    <div class="form-group">
+      <label for="day">Select Day:</label>
+      <select id="day" name="form-day" placeholder="select the day"> 
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="year">Academic Year:</label>
+      <input type="text" name="form-year" id="year" placeholder="Enter the year">
+    </div>
+
+    <div class="form-group">
+      <label for="breakfast">Breakfast:</label>
+      <input type="text" name="form-breakfast" id="breakfast" placeholder="Enter the breakfast menu">
+    </div>
+
+    <div class="form-group">
+      <label for="lunch">Lunch:</label>
+      <input type="text" name="form-lunch"  id="lunch" placeholder="Enter the lunch menu">
+    </div>
+
+    <div class="form-group">
+      <label for="snacks">Snacks:</label>
+      <input type="text" name="form-snacks" id="snacks" placeholder="Enter the snacks menu">
+    </div>
+
+    <div class="form-group">
+      <label for="dinner">Dinner:</label>
+      <input type="text" name="form-dinner" id="dinner" placeholder="Enter the dinner menu">
+    </div>
+
+    <button id="submitMenu">Submit</button>
+
+    <div id="messageBox" style="display: none;">
+      <p id="message"></p>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+        // Show sidebar by default
+        const sidebar = $('.sidebar');
+        const menuBtn = $('.menu-btn');
+        const containerBox = $('.container-box');
+
+        sidebar.addClass('active'); // Make sidebar visible by default
+        containerBox.addClass('active'); // Adjust main container if needed
+
+        // Function to add new form entry
+        function addNewEntry() {
+            const newEntry = `
+                <div class="form-group">
+                    <input type="text" name="form-breakfast" placeholder="Enter the breakfast">
+                    <input type="text" name="form-snacks" placeholder="Enter the snacks">
+                    <input type="number" name="form-year" placeholder="Enter the year">
+                    <input type="text" name="form-dinner" placeholder="Enter the dinner">
+                    <input type="text" name="form-day" placeholder="Select the day">
+                </div>`;
+            $('#formContainer').append(newEntry); // Append new entry to a container
+        }
+
+        // Example: Call addNewEntry function to add the first entry
+        addNewEntry(); // Uncomment this if you want to add an entry on page load
+
+        // Toggle sidebar visibility when menu button is clicked
+        menuBtn.on('click', function() {
+            sidebar.toggleClass('active');
+            containerBox.toggleClass('active');
+            menuBtn.toggleClass('active');
+        });
+
+        // Message box auto-hide functionality
+        var messageBox = $('#messageBox');
+        if (messageBox.length) {
+            setTimeout(function() {
+                messageBox.fadeOut(); // Smoothly hide the message box
+            }, 3000);
+        }
+    });
+</script>
+

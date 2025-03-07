@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Receive Materials Entry</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+    .body {
+        min-height: 100vh;
+        width: 200%; /* Make the body wider than the viewport for horizontal scroll */
+        overflow-x: auto; /* Enable horizontal scrolling */
+        overflow-y: hidden; /* Disable vertical scrolling (optional) */
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8; /* Light gray background */
+        display: flex;
+        flex-direction: row; /* Arrange items horizontally */
+    }
+    
+    .sidebar {
+        position: fixed; /* Keep sidebar fixed */
+        left: 0;
+        top: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #3f4e4f; /* Dark teal background for sidebar */
+        z-index: 1;
+    }
+    
+    .sidebar.active {
+        left: 0; /* Keep active state consistent */
+    }
+    
+    .container-box {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 10px;
+        max-width: 1230px;
+        margin: 50px 0;
+        flex: 1 0 auto; /* Allow the container to grow horizontally */
+        margin-left: 5px; /* Adjust for sidebar width */
+        position: relative;
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for elevation */
+    }
+    
+    .sidebar.active ~ .container-box {
+        transform: translateX(250px);
+    }
+    
+    /* Material entry form */
+    .material-entry {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 30px;
+        background-color: #e0f7fa; /* Light teal background for entries */
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #b2ebf2;
+    }
+    
+    .material-entry input, .material-entry button, .material-entry select, .material-entry textarea {
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    
+    #submit {
+        background-color: #43a047; /* Green for submit button */
+        color: white;
+        cursor: pointer;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    
+    #submit:hover {
+        background-color: #1565c0; /* Darker blue on hover */
+    }
+    .selection-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 10px 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .selection-btn:hover {
+        background-color: #0056b3;
+    }
+
+    #selection-buttons {
+        margin-bottom: 20px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        body {
+            width: 150%; /* Adjust for smaller screens */
+        }
+    
+        .container-box {
+            max-width: 90%;
+            padding: 20px;
+        }
+    }
+    
+    </style>
+</head>
+
+<body>
+    <div class="menu-btn">
+        <i class="fas fa-bars"></i>
+        <span class="menu-text">Menu</span>
+    </div>
+
+    {% include 'base/sidebar.html' %}
+
+    <div class="container-box">
+        <h2 style="color: #0f0f0f;">Receive Materials Entry</h2>
+        <form id="receiveForm" method="POST">
+            {% csrf_token %}
+            <label for="date">Select the Date:</label>
+            <input type="date" id="purchase-date" name="purchase_date" placeholder="Enter Purchase Date" required style="padding: 10px; border: 1px solid #b2ebf2; border-radius: 5px">
+            <button type="submit" id="submit">Submit</button>
+            <div id="received-materials">
+                <!-- Dynamic input fields will be appended here -->
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Sidebar functionality
+            $('.sidebar').addClass('active'); // Make sidebar visible by default
+            $('.container-box').addClass('active'); // Adjust main container if needed
+    
+            const menuBtn = document.querySelector('.menu-btn');
+            const sidebar = document.querySelector('.sidebar');
+            const containerBox = document.querySelector('.container-box');
+    
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active'); // Toggle sidebar visibility
+                containerBox.classList.toggle('active'); // Move container when sidebar is active
+                menuBtn.classList.toggle('active'); // Adjust menu button position
+            });
+    
+            // Handle purchase date change
+            $('#purchase-date').on('change', function () {
+                const purchaseDate = $(this).val();
+    
+                $.ajax({
+                    url: '/fetch-purchase-data/',
+                    method: 'GET',
+                    data: { 'purchase_date': purchaseDate },
+                    success: function (response) {
+                        $('#received-materials').empty(); // Clear the input area first
+                        $('#selection-buttons').remove(); // Remove existing buttons if any
+    
+                        if (response.error) {
+                            alert(response.error);
+                            return;
+                        }
+    
+                        if (response.message) {
+                            alert(response.message); // Show "All data has already been stored"
+                            return;
+                        }
+    
+                        if (response.prompt) {
+                            const buttonContainer = `
+                                <div id="selection-buttons">
+                                    <button id="upgrade-btn" class="selection-btn">Upgrade (Pending)</button>
+                                    <button id="new-stock-btn" class="selection-btn">New Stock (Not Received)</button>
+                                </div>
+                            `;
+                            $('#received-materials').before(buttonContainer); // Add buttons above the materials list
+    
+                            // Attach click handlers to the buttons
+                            $('#upgrade-btn').on('click', function () {
+                                appendMaterials(response.pending);
+                                $('#selection-buttons').remove(); // Remove buttons after selection
+                            });
+    
+                            $('#new-stock-btn').on('click', function () {
+                                appendMaterials(response.not_received);
+                                $('#selection-buttons').remove(); // Remove buttons after selection
+                            });
+                            return;
+                        }
+    
+                        if (response.status === 'pending' || response.status === 'not_received') {
+                            appendMaterials(response.data); // For single status scenarios
+                        } else if (response.status === 'new') {
+                            appendMaterials(response.purchases); // For new entries
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error: ", status, error, xhr.responseText);
+                        alert("Error fetching data. Please try again.");
+                    },
+                });
+            });
+    
+            function appendMaterials(data) {
+                data.forEach(function (material) {
+                    $('#received-materials').append(`
+                        <div class="material-entry">
+                            <div>
+                                <label>Material:</label>
+                                <input type="text" class="names" name="name" value="${material.name}" readonly>
+                            </div>
+                            <div>
+                                <label>Purchased Quantity:</label>
+                                <input type="number" class="quantity"  value="${material.quantity}" readonly>
+                            </div>
+                            <div>
+                                <label>Received Date:</label>
+                                <input type="date" name="received_date" required class="received-date">
+                            </div>
+                            <div>
+                                <label>Received Quantity:</label>
+                                <input type="number" name="received_quantity" placeholder="Received Quantity" class="received-quantity" step="0.01">
+                            </div>
+                            <div>
+                                <label for="purchased-unit">Unit:</label>
+                                <input type="text" id="received-unit" name="unit" value="${material.unit}" placeholder="Enter Unit" list="unit-options" onblur="validateSelection(this)">
+                                <datalist id="unit-options">
+                                    <option value="kg">
+                                    <option value="g">
+                                    <option value="l">
+                                    <option value="mL">
+                                    <option value="NOS">
+                                    <option value="PAC">
+                                    <option value="BTL">
+                                    <option value="MTR">
+                                </datalist>
+                            </div>
+                            <div>
+                                <label>Remarks:</label>
+                                <textarea name="remarks" class="remarks" placeholder="Enter Remarks" rows="1" style="resize: none;"></textarea>
+                            </div>
+                        </div>
+                    `);
+                });
+    
+                // Synchronize received date inputs
+                $('.received-date').first().on('change', function () {
+                    const firstReceivedDate = $(this).val();
+                    $('.received-date').val(firstReceivedDate);
+                });
+    
+                // Update received quantity and remarks based on received quantity input
+                $('.received-quantity').on('input', function () {
+                    const receivedQuantityInput = $(this);
+                    const receivedQuantity = parseFloat(receivedQuantityInput.val()) || 0;
+                    const purchasedQuantity = parseFloat(receivedQuantityInput.closest('.material-entry').find('.quantity').val()) || 0;
+                    const remarksField = receivedQuantityInput.closest('.material-entry').find('.remarks');
+    
+                    // Prevent the received quantity from exceeding purchased quantity
+                    if (receivedQuantity > purchasedQuantity) {
+                        // Reset to purchased quantity if the received quantity exceeds it
+                        receivedQuantityInput.val(purchasedQuantity);
+    
+                        // Optionally, alert the user
+                        alert('Received quantity cannot exceed purchased quantity.');
+                    }
+    
+                    // Update remarks based on received quantity
+                    if (receivedQuantity === purchasedQuantity) {
+                        remarksField.val('Received');
+                    } else {
+                        remarksField.val('Please write manually');
+                    }
+                });
+            }
+    
+            // Validate unit input
+            function validateSelection(input) {
+                const value = input.value;
+                const list = document.getElementById(input.getAttribute('list'));
+                const options = Array.from(list.options);
+                const isValid = options.some(option => option.value === value);
+    
+                if (!isValid) {
+                    alert('Please select a valid unit from the dropdown.');
+                    input.value = input.defaultValue;
+                }
+            }
+        });
+    </script>
+    

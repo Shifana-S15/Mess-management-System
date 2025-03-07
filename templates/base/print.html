@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <title>Print</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+</head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+  }
+
+  body {
+    min-height: 100vh;             /* Full viewport height */
+    display: flex;
+    justify-content: center;       /* Horizontal centering */
+    align-items: center;           /* Vertical centering */
+    font-family: Arial, sans-serif;     /* Optional background color */
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #f9fffd;
+    padding-top: 20px;
+    z-index: 1;
+    transition: left 0.3s ease;
+  }
+  
+  .sidebar.active {
+    left: 0;  /* Show sidebar when active */
+  }
+  
+  .sidebar header {
+    font-size: 18px;
+    color: rgb(13, 13, 13);
+    line-height: 70px;
+    background: #f9fffd;
+    user-select: none;
+  }
+
+  .sidebar ul a {
+    display: block;
+    height: 100%;
+    width: 100%;
+    line-height: 65px;
+    font-size: 14px;
+    color: rgb(12, 12, 12);
+    background: #f5fffa;
+    padding-left: 40px;
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    transition: 0.4s;
+  }
+
+  ul li:hover a {
+    padding-left: 50px;
+    background:#007bff;
+  }
+
+  .sidebar ul a i {
+    margin-right: 16px;
+    color:rgb(176, 24, 24);
+  }
+
+  .menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 250px;
+    font-size: 30px;
+    color: #191a1b;
+    cursor: pointer;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    font-size: 20px;
+  }
+
+  .menu-btn.active {
+    left: 265px;  /* Place button after the sidebar when sidebar is active */
+  }
+
+  .content-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin-left: 250px;
+    text-align: center;
+  }
+
+  .content-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .button:hover {
+    background-color: #45a049;
+  }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;        /* Stack boxes vertically */
+    gap: 20px;                     /* Space between the boxes */
+    align-items: center;           /* Center the boxes horizontally */
+  }
+  
+  .box-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px;                  /* Rectangle width */
+    height: 100px;                 /* Rectangle height */
+    background-color: #007bff;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .box-link:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);        /* Slight scaling on hover */
+  }
+  .notification-icon {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+</style>
+
+<body>
+
+  <div class="menu-btn">
+    <i class="fas fa-bars"></i> <!-- Menu icon -->
+    <span class="menu-text">Menu</span>
+  </div>
+
+  {% include 'base/sidebar.html' %}
+
+  <!-- Main content area with buttons -->
+  <div class="main-content">
+    <a href="{% url 'print_purchase_view' %}"class="box-link">Print the Approved Stock Items
+     
+    </a>
+    <a href="{% url 'print_need_view' %}"class="box-link">Print the Approved cooking Stocks 
+    
+      
+    </a>
+  </div>
+  <script>
+    const menuBtn = document.querySelector('.menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+
+    // Initialize sidebar as visible
+    sidebar.classList.add('active'); // Show sidebar by default
+    mainContent.classList.add('sidebar-hidden'); // Adjust main content if needed
+
+    menuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('active');  // Toggle sidebar visibility
+        menuBtn.classList.toggle('active'); 
+        mainContent.classList.toggle('sidebar-hidden');  // Adjust main content
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0'; // Fade out effect
+                setTimeout(() => {
+                    alert.remove(); // Remove element from DOM after fade out
+                }, 600); // Delay removal to match fade out time
+            }, 3000); // Show for 3 seconds
+        });
+    });
+</script>

@@ -1,0 +1,149 @@
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-right: 25px;
+    position: relative;
+  }
+  
+  /* Apply background effect */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+  }
+
+  /* Sidebar Styling */
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #f9fffd;
+    padding-top: 20px;
+    z-index: 1;
+    transition: left 0.3s ease;
+    overflow-y: auto; /* This makes the sidebar scrollable */
+}
+
+.sidebar.active {
+    left: 0;  /* Show sidebar when active */
+}  /* Show sidebar when active */
+  
+  .sidebar header {
+  font-size: 18px;
+  color: rgb(13, 13, 13);
+  line-height: 70px;
+  background: #f9fffd;
+  user-select: none;
+ }
+
+.sidebar ul a {
+  display: block;
+  height: 100%;
+  width: 100%;
+  line-height: 65px;
+  font-size: 14px;
+  color: rgb(12, 12, 12);
+  background: #f5fffa;
+  padding-left: 40px;
+  box-sizing: border-box;
+  border-bottom: 1px solid black;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  transition: 0.4s;
+ }
+
+ul li:hover a {
+  padding-left: 50px;
+  background:#007bff;
+ }
+
+.sidebar ul a i {
+  margin-right: 16px;
+  color:rgb(176, 24, 24);
+ }
+ 
+
+</style>
+<body>
+
+  <div class="sidebar">
+    <ul>
+    <p>User Role: {{ user_role }}</p>
+
+      
+      {% if user_role == 'admin' %}
+      <li><a href="{% url 'dash_view' %}"><i class="fas fa-qrcode"></i>Available Stock</a></li>
+      <li><a href="{% url 'add_data' %}"><i class="fa-solid fa-cart-shopping"></i>Add Purchased Data</a></li>
+      <li><a href="{% url 'adddata' %}"><i class="fa-solid fa-plus"></i>Add Used Data</a></li>
+      <li><a href="{% url 'visualization' %}"><i class="fas fa-stream"></i>Stock Dashboard</a></li>
+      <li><a href="{% url 'Acknowledgement' %}"><i class="fa-solid fa-check"></i></i>Approval</a></li>
+      <li><a href="{% url 'mess' %}"> <i class="fa-solid fa-utensils"></i>Mess Schedule</a></li>
+      <li><a href="{% url 'print_view' %}"><i class="fa-solid fa-print"></i>Print Approval </a></li>
+      <li><a href="{% url 'materials_purchase_view' %}"><i class="fa-solid fa-bag-shopping"></i>Materials to purchase</a></li>
+      <li><a href="{% url 'materials_need_view' %}"><i class="fa-solid fa-shop"></i></i>Needed Stock</a></li>
+      <li><a href="{% url 'received_view' %}"><i class="fa-regular fa-eye"></i> View Received Items</a></li>
+      <li><a href="{% url 'materials_receive_view' %}"><i class="fa-solid fa-plus"></i>Received items entry</a></li>
+      <li><a href="{% url 'add_item' %}"><i class="fa-solid fa-plus"></i>Add Material Item</a></li>
+      <li><a href="{% url 'mess_entry_view' %}"> <i class="fa-solid fa-bell-concierge"></i>Mess Schedule Entry</a></li>
+      <li><a href="{% url 'backup_purchase_view' %}"><i class="fas fa-qrcode"></i>Backup purchase</a></li>
+      <li><a href="{% url 'backup_need_view' %}"><i class="fa-solid fa-shop"></i>Backup Need</a></li>
+   
+
+
+
+        
+      {% elif user_role == 'shopkeeper' %}
+      <li><a href="{% url 'dash_view' %}"><i class="fas fa-qrcode"></i>Available stock</a></li>
+      <li><a href="{% url 'materials_purchase_view' %}"><i class="fa-solid fa-bag-shopping"></i>Materials to Purchase</a></li>
+      <li><a href="{% url 'print_view' %}"><i class="fa-solid fa-print"></i>Print Approval</a></li>
+      <li><a href="{% url 'materials_receive_view' %}"><i class="fa-solid fa-cart-shopping"></i>Received items entry</a></li>
+      <li><a href="{% url 'received_view' %}"><i class="fa-regular fa-eye"></i></i> View Received items</a></li>
+      <li><a href="{% url 'add_data' %}"><i class="fa-solid fa-cart-shopping"></i>Add Purchased Data</a></li>
+      <li><a href="{% url 'add_item' %}"><i class="fa-solid fa-plus"></i>Add Material Item</a></li>
+      
+      {% elif user_role == 'gm' %}
+      <li><a href="{% url 'Acknowledgement' %}"><i class="fa-solid fa-check"></i></i>Approval</a></li>
+      <li><a href="{% url 'dash_view' %}"><i class="fas fa-qrcode"></i>Available Stock</a></li>
+      <li><a href="{% url 'received_view' %}"><i class="fa-regular fa-eye"></i></i> View Received items </a></li>
+      <li><a href="{% url 'visualization' %}"><i class="fas fa-stream"></i> Stock Dashboard</a></li>
+
+      
+      {% elif user_role == 'mess-incharge' %}
+      <li><a href="{% url 'dash_view' %}"><i class="fas fa-qrcode"></i>Available Stock</a></li>
+      <li><a href="{% url 'mess' %}"> <i class="fa-solid fa-utensils"></i>Mess Schedule</a></li>
+      <li><a href="{% url 'materials_need_view' %}"><i class="fa-solid fa-shop"></i></i>Needed Stock</a></li>
+      <li><a href="{% url 'adddata' %}"><i class="fa-solid fa-plus"></i>Add Used Data</a></li>
+      <li><a href="{% url 'mess_entry_view' %}"><i class="fa-solid fa-bell-concierge"></i>Mess Schedule Entry</a></li>
+      <li><a href="{% url 'add_item' %}"><i class="fa-solid fa-check"></i>Add Material Item</a></li>
+  
+      
+      {% elif user_role == 'principal' %}
+      <li><a href="{% url 'dash_view' %}"><i class="fas fa-qrcode"></i>Available Stock</li>
+      <li><a href="{% url 'visualization' %}"><i class="fas fa-stream"></i>Stock Dashboard</a></li>
+
+
+      {% elif user_role == 'accountant' %}
+      <li><a href="{% url 'dash_view' %}"><i class="fas fa-qrcode"></i>Available Stock</li>
+      <li><a href="{% url 'visualization' %}"><i class="fas fa-stream"></i>Stock Dashboard</a></li>
+      
+      
+      {% endif %}
+      <li><a href="{% url 'logout_out' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i>Log Out</a></li>
+  </div>
+
+  
+  

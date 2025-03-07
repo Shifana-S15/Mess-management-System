@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <title>Acknowledgement</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+    <style>
+        /* General styling */
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f9fffd;
+            padding-top: 20px;
+            z-index: 1;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 15px;
+            left: 250px;
+            font-size: 20px;
+            color: #191a1b;
+            cursor: pointer;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+
+        .menu-btn.active {
+            left: 265px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-left: 250px;
+            text-align: center;
+        }
+
+        .box-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 600px;
+            height: 100px;
+            background-color: #007bff;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .box-link:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        /* Notification icon styling */
+        .notification-icon {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="menu-btn">
+        <i class="fas fa-bars"></i>
+        <span class="menu-text">Menu</span>
+    </div>
+
+    {% include 'base/sidebar.html' %}
+
+    <div class="main-content">
+        <!-- Purchase Approval Button with Notification Icon -->
+        <a href="{% url 'Purchase_Acknowledgement' %}" class="box-link">
+            Approval for shopkeeper to Purchase stock items
+            {% if pending_purchase_count > 0 %}
+                <span class="notification-icon">{{ pending_purchase_count }}</span>
+            {% endif %}
+        </a>
+
+        <!-- Need Approval Button -->
+        <a href="{% url 'need_Acknowledgement' %}" class="box-link">
+            Approval for mess-in-charge to Use stock items
+            {% if pending_need_count > 0 %}
+                <span class="notification-icon">{{ pending_need_count }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    <script>
+        const menuBtn = document.querySelector('.menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+
+        sidebar.classList.add('active');
+            containerBox.classList.add('active');
+            menuBtn.classList.add('active');
+    
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            menuBtn.classList.toggle('active');
+            mainContent.classList.toggle('sidebar-hidden');
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0'; // Fade out effect
+                    setTimeout(() => {
+                        alert.remove(); // Remove element from DOM after fade out
+                    }, 600); // Delay removal to match fade out time
+                }, 3000); // Show for 3 seconds
+            });
+        });
+
+
+    </script>
+</body>
+</html>

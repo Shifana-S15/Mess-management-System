@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" />
+    <title>Ramco Institute of Technology</title>
+</head>
+
+<style>
+  body {
+    background-image: url('{% static "images/background.jpg" %}');  /* Adjusted the path for Django static files */
+    background-size: cover;
+    font-size: small;
+    font-family: 'Times New Roman', Times, serif;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.rit{
+    background-color: white;
+    background-image: url('{% static "images/rit.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    height:35vh ;
+}
+.alert-red {
+        background-color: rgb(251, 196, 196); /* Red background color */
+        color: red; /* White text color */
+        border-color: red; /* Optional: Darker border for better visibility */
+      }
+      .alert-red .close {
+        color: red; /* White close button color */
+      }
+</style>
+
+<body>
+    <div class="rit"></div>
+    <div class="container">
+      <div class="container container-login" style="margin-top: 100px; font-size: larger">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <h2>Login to RIT Dashboard</h2>
+
+            <!-- Messages Block -->
+            {% if messages %}
+              <div class="alert alert-red alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                  {{ message }}
+                {% endfor %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endif %}
+            
+          <!-- End of message display block -->
+          
+          
+            <form method="POST" action="{% url 'login_view' %}" autocomplete="off">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="username">Staff ID</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="staff_id"
+                  name="staff_id"
+                  placeholder="Enter your Staff ID"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Login</button>
+              <a href="{% url 'password_reset_request' %}">Change Password</a>
+
+            
+            </form>
+            
+
+            <!-- Add a link to the sign-up page -->
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+<script>
+  function closeMessage(element) {
+    var messageBox = element.closest(".message");
+    messageBox.style.display = "none"; // Hide the message box
+  }
+</script>
+</html>

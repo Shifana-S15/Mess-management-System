@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('{% static "images/background.jpg" %}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 100px;
+        }
+        h2 {
+            text-align: center;
+            color: #111112;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            width: 100%;
+            background-color: #007bff;
+            border: none;
+            font-size: 18px;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .alert-red {
+        background-color: rgb(251, 196, 196); /* Red background color */
+        color: red; /* White text color */
+        border-color: red; /* Optional: Darker border for better visibility */
+      }
+      .alert-red .close {
+        color: red; /* White close button color */
+      }
+    </style>
+</head>
+<body>
+    {% if messages %}
+    <div class="alert alert-red alert-dismissible fade show" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% endif %}
+  
+   
+    <div class="container mt-5">
+        <h2>Verify Your OTP</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="otp">OTP</label>
+                <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Verify OTP</button>
+        </form>
+    </div>
+</body>
+</html>

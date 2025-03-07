@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
+
+* {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  text-decoration: none;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-right: 25px;
+  position: relative; /* To allow the ::before pseudo-element for the white overlay effect */
+}
+
+/* Apply the frameless white effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('rit1.jpg') no-repeat center center fixed; /* Background image */
+  background-size: cover;
+  filter: blur(5px) brightness(1.2); /* Soft blur and lightening for the frameless effect */
+  z-index: -1; /* Make sure the overlay is behind the content */
+}
+
+.center-image {
+  margin-left: 50px; /* Adjust to match sidebar width */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align items to the top */
+  padding-top: 20px; /* Add some padding from the top */
+}
+
+.image-container {
+  text-align: center;
+}
+
+.center-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #c0c0c0;
+  transition: all 0.5s ease;
+  z-index: 1000; 
+}
+
+.sidebar header {
+  font-size: 18px;
+  color: rgb(13, 13, 13);
+  line-height: 70px;
+  background: #c0c0c0;
+  user-select: none;
+}
+
+.sidebar ul a {
+  display: block;
+  height: 100%;
+  width: 100%;
+  line-height: 65px;
+  font-size: 14px;
+  color: rgb(12, 12, 12);
+  background: #f5fffa;
+  padding-left: 40px;
+  box-sizing: border-box;
+  border-bottom: 1px solid black;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  transition: 0.4s;
+}
+
+ul li:hover a {
+  padding-left: 50px;
+}
+
+.sidebar ul a i {
+  margin-right: 16px;
+}
+
+#check {
+  display: none;
+}
+
+label #btn, label #cancel {
+  position: absolute;
+  background: #c0c0c0;
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+label #btn {
+  left: 40px;
+  top: 25px;
+  font-size: 20px;
+  color: white;
+  padding: 6px 12px;
+  transition: all 0.5s;
+}
+
+label #cancel {
+  z-index: 1111;
+  left: -195px;
+  top: 10px;
+  font-size: 30px;
+  color: #050505;
+  padding: 4px 9px;
+  transition: all 0.5s ease;
+}
+
+#check:checked ~ .sidebar {
+  left: 0;
+}
+
+#check:checked ~ label #btn {
+  left: 250px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#check:checked ~ label #cancel {
+  left: 195px;
+}
+
+#check:checked ~ section {
+  margin-left: 250px;
+}
+
+.section {
+  transition: all 0.5s;
+  z-index: 1; /* Ensure content is above the background */
+}
+
+/* Additional styling for the Add Materials section */
+/* Container Box for the Material Form Section */
+/* General Styles */
+.container-box {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 50px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  max-width: 1100px;
+  margin: 20px 50px; /* Adjust the margin as needed */
+  position:relative;
+  z-index: 500;
+}
+
+/* Heading Styles */
+.container-box h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+.upload-btn {
+  background-color: #2c3e50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  display: inline-block;
+  top:25px;
+  right:70px;
+  position:absolute;
+}
+
+.upload-btn:hover {
+  background-color: #1abc9c;
+}
+
+/* Material Form Section */
+.material-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px; /* Space between form sections */
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(240, 240, 240, 0.9);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  position: relative; 
+}
+
+/* Section Heading */
+.material-form-section h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+/* Material Entry Styles */
+.material-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.material-entry input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.material-name {
+  flex: 2;
+}
+
+.material-quantity {
+  flex: 1;
+}
+.material-date {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.remove-material {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.remove-material:hover {
+  background-color: #c0392b;
+}
+
+/* Add Material Button Styles */
+#addMaterial, #addMaterial1 {
+  align-self: flex-start;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+#addMaterial:hover, #addMaterial1:hover {
+  background-color: #1abc9c;
+}
+/* Modify the CSS for submit buttons to be positioned near the Add Another Material button */
+
+/* Common styles for the submit buttons */
+/* Flex container to hold the Add Another Material and Submit buttons */
+
+/* Button styles */
+#submit, #submit1, .add-material-button {
+  align-self: flex-start;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+#submit:hover, #submit1:hover, .add-material-button:hover {
+  background-color: #1abc9c;
+}
+
+
+

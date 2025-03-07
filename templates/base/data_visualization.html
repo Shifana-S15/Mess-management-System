@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Material Visualization</title>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+    <!-- Custom CSS -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            list-style: none;
+            text-decoration: none;
+        }
+      
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            margin-right: 25px;
+            position: relative;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        .wrapper {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f9fffd;
+            padding-top: 20px;
+            z-index: 2;
+            transition: left 0.3s ease;
+        }
+        .sidebar.active {
+            left: 0;
+        }
+        .sidebar header {
+            font-size: 18px;
+            color: rgb(13, 13, 13);
+            line-height: 70px;
+            background: #f9fffd;
+            user-select: none;
+        }
+
+        .sidebar ul a {
+            display: block;
+            width: 100%;
+            line-height: 65px;
+            font-size: 14px;
+            color: rgb(12, 12, 12);
+            background: #f5fffa;
+            padding-left: 40px;
+            box-sizing: border-box;
+            border-bottom: 1px solid black;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            transition: 0.4s;
+        }
+
+        ul li:hover a {
+            padding-left: 50px;
+            background: #007bff;
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 15px;
+            left: 250px;
+            font-size: 20px;
+            color: #191a1b;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* Filter Form and Chart Styling */
+        #filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        label {
+            flex: 1 1 100%;
+            color: #666;
+            font-weight: bold;
+        }
+        select, input[type="date"], button {
+            flex: 1 1 calc(50% - 15px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            position: relative;
+            z-index: 10; /* Ensures form elements are in front */
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            max-width: 200px;
+            padding: 10px;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #bar-chart, #pie-chart {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        /* Select2 z-index fix */
+        .select2-container {
+            z-index: 9999 !important; /* Higher than sidebar and wrapper */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="menu-btn">
+        <i class="fas fa-bars"></i> <!-- Menu icon -->
+        <span class="menu-text">Menu</span>
+    </div>
+
+    <!-- Sidebar -->
+    {% include 'base/sidebar.html' %}
+
+    <div class="wrapper">
+        <h1>Material Data Visualization</h1>
+
+        <!-- Filters -->
+        <form id="filter-form">
+            <label for="material-select">Select Material Names</label>
+            <select id="material-select" name="material_names" multiple="multiple" class="form-control">
+                {% for material in materials %}
+                    <option value="{{ material.name }}">{{ material.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="quantity-type">Select Quantity Type</label>
+            <select id="quantity-type" name="quantity_type">
+                <option value="available_quantity">Available</option>
+                <option value="used_quantity">Used</option>
+                <option value="quantity">Purchased</option>
+            </select>
+
+            <label for="month-select">Select Month</label>
+            <select id="month-select" name="month">
+                <option value="">All</option>
+                {% for month in months %}
+                    <option value="{{ month.value }}">{{ month.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="date-select">Select Date</label>
+            <input type="date" id="date-select" name="date">
+
+            <button type="button" onclick="updateCharts()">Filter</button>
+        </form>
+
+        <!-- Charts -->
+        <div id="bar-chart"></div>
+        <div id="pie-chart"></div>
+    </div>
+
+    <!-- Select2, jQuery, and AJAX for filtering -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.querySelector('.menu-btn');
+
+            // Show sidebar by default
+            sidebar.classList.add('active');
+
+            // Toggle sidebar visibility on menu button click
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        });
+
+        $(document).ready(function() {
+            $('#material-select').select2({
+                placeholder: "Select material names",
+                allowClear: true
+            });
+        });
+
+        function updateCharts() {
+            const formData = {
+                material_names: $('#material-select').val(),
+                quantity_type: $('#quantity-type').val(),
+                month: $('#month-select').val(),
+                date: $('#date-select').val()
+            };
+            $.ajax({
+                url: "{% url 'update_charts' %}",
+                type: "GET",
+                data: formData,
+                traditional: true,
+                success: function(data) {
+                    Plotly.newPlot('bar-chart', data.bar_chart,data.bar_chart_layout);
+                    Plotly.newPlot('pie-chart', data.pie_chart);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

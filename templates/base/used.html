@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Usage Data Entry</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    <script src="https://kit.fontawesome.com/51c8697504.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <style>
+       
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f9fffd;
+            padding-top: 20px;
+            z-index: 1;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 15px;
+            left: 250px;
+            font-size: 20px;
+            color: #191a1b;
+            cursor: pointer;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+
+        .menu-btn.active {
+            left: 265px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-left: 250px;
+            text-align: center;
+        }
+
+        .container-box {
+            background-color: #fff;
+            padding: 40px;
+            margin: 50px auto;
+            border-radius: 10px;
+            max-width: 1150px;
+            margin-left: 260px;
+            position: relative;
+            transition: transform 0.3s ease;
+            top: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .material-entry {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #b2ebf2;
+            background-color: #e0f7fa;
+        }
+        .material-entry input, .material-entry select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #submit {
+            background-color: #43a047;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #submit:hover {
+            background-color: #1565c0;
+        }
+    </style>
+</head>
+
+<body>
+
+    
+        <div class="menu-btn">
+            <i class="fas fa-bars"></i>
+            <span class="menu-text">Menu</span>
+        </div>
+    
+        {% include 'base/sidebar.html' %}
+
+    <div class="container-box">
+        <h2 style="color: #0f0f0f;">Mess Incharge - Usage Data Entry</h2>
+        <form id="dataForm" method="POST">
+            {% csrf_token %}
+            <label for="date">Select the Date:</label>
+            <input type="date" id="data-date" name="data_date" required style="padding: 10px; border: 1px solid #b2ebf2; border-radius: 5px;">
+            <button type="submit" id="submit">Submit</button>
+            <div id="material-data">
+                <!-- Dynamic input fields will be appended here -->
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#data-date').on('change', function() {
+                const selectedDate = $(this).val();
+                console.log("Selected Date: ", selectedDate);
+                $.ajax({
+                    url: '/fetch_materials_by_date/',  // URL to fetch data for the selected date
+                    method: 'GET',
+                    data: { 'date': selectedDate },
+                    success: function(response) {
+                        if (response.error) {
+                            alert(response.error);
+                        } else {
+                            $('#material-data').empty();  // Clear previous data
+
+                            response.materials.forEach(function(material) {
+                                $('#material-data').append(`
+                                    <div class="material-entry">
+    <input type="hidden" name="received_id" value="${material.id}">
+    
+    <div>
+        <label for="material-date">Date:</label>
+        <input type="text" id="material-date" name="material-date" value="${material.date}" readonly>
+    </div>
+    
+    <div>
+        <label for="material-name">Material Name:</label>
+        <input type="text" id="material-name" name="material-name" value="${material.name}" readonly>
+    </div>
+    
+    <div>
+        <label for="material-approved-quantity">Approved Quantity:</label>
+        <input type="number" id="material-approved-quantity" name="material-approved-quantity" value="${material.quantity}" readonly>
+    </div>
+    
+    <div>
+        <label for="material-quantity">Used Quantity:</label>
+        <input type="text" id="material-quantity" name="material-quantity" placeholder="Enter used quantity" required step="0.01">
+    </div>
+    
+    <div>
+        <label for="material-unit">Unit:</label>
+        <input type="text" id="material-unit" name="material-unit" value="${material.unit}" placeholder="Enter Unit" list="unit-options" onblur="validateSelection(this)">
+        <datalist id="unit-options">
+        <option value="kg">
+        <option value="g">
+        <option value="l">
+        <option value="mL">
+        <option value="NOS">
+        <option value="PAC">
+        <option value="BTL">
+        <option value="MTR">
+        </datalist>
+
+        </div>
+                                     
+                                `);
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        // Parse error response and show specific error message
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.error) {
+                                alert(response.error); // Show backend-provided error message
+                            } else {
+                                alert("An unexpected error occurred while fetching data.");
+                            }
+                        } catch (e) {
+                            alert("Error fetching received data.");
+                        }
+                    
+                    }
+                });
+            });
+        });
+        const menuBtn = document.querySelector('.menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+
+        sidebar.classList.add('active');
+            containerBox.classList.add('active');
+            menuBtn.classList.add('active');
+    
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            menuBtn.classList.toggle('active');
+            mainContent.classList.toggle('sidebar-hidden');
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0'; // Fade out effect
+                    setTimeout(() => {
+                        alert.remove(); // Remove element from DOM after fade out
+                    }, 600); // Delay removal to match fade out time
+                }, 3000); // Show for 3 seconds
+            });
+        });
+        function validateSelection(input) {
+    const value = input.value; // Current value of the input
+    const list = document.getElementById(input.getAttribute('list')); // The linked datalist
+    const options = Array.from(list.options); // Get all options from the datalist
+    const isValid = options.some(option => option.value === value); // Check if input matches any option
+
+    // If not valid, revert to the default value
+    if (!isValid) {
+      alert('Please select a valid unit from the dropdown.');
+      input.value = input.defaultValue; // Restore the original value
+    }
+  }
+
+    </script>
+    
+</body>
+</html>
