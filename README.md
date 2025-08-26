@@ -19,3 +19,27 @@ Backend: Django, MySQL (XAMPP)
 Frontend: HTML, CSS, Bootstrap
 Visualization: Chart.js / Plotly (for data insights)
 Authentication: Custom user model for role-based access
+
+---
+## 🖼️ Screenshots
+
+### Custom Login
+![Original Image upload Screenshot](screenshots/customlogin.png)
+
+### Adding Daily Data   
+![Original Image upload Screenshot](screenshots/Adddata.png)
+
+### Email Notifications
+![Original Image upload Screenshot](screenshots/Email.png)
+
+### Approval workflows
+![Original Image upload Screenshot](screenshots/Approval.png)
+
+### Available Stocks
+![Original Image upload Screenshot](screenshots/Availablestock.png)
+
+### visualization
+![Original Image upload Screenshot](screenshots/visualization.png)
+
+
+---
